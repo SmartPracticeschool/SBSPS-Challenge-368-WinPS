@@ -29,6 +29,9 @@ def current_situation(temp, w, ws, r_status):
         P = 1.2  # default air density
     time.sleep(1)
     print('density: {} kg/m^3'.format(P))
+    
+    # output formulation for current power production integrated with risk management
+    
     if ws < 12:
         time.sleep(1)
         print('Wind speed is not suitable for Energy Production........')
@@ -67,6 +70,9 @@ def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
     efficiency1 = 40
     count = 0
     for m in range(length1):
+        
+        # output formulation for predicted power production integrated with risk management
+        
         if w_kps_list[m] < 20:
             count = count + 1
         elif 20 <= w_kps_list[m] < 50:
@@ -127,11 +133,11 @@ def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
 city_entry = raw_input('Enter City: ')
 country_entry = raw_input('Enter country: ')
 
-# contents
-
 running_status = True
 
 while running_status:
+    
+    # contents
     wind_mps_list = []
     wind_kps_list = []
     c_temp = []
@@ -143,7 +149,7 @@ while running_status:
     total_data_hourly = []
     total_data_3hourly = []
     api_key = '3ee50f44c4e30cacbd795358f1c6531d'
-
+    
     owm = pyowm.OWM(api_key)
     loc = city_entry + ', ' + country_entry
     observation = owm.weather_at_place(loc)
