@@ -25,5 +25,5 @@ NOTE:
          d. requests
          e. datetime
          f. csv
-from pip._vendor.distlib.compat import raw_input
+         g. raw_input
      iii. Make sure the system is installed with python3 interpreter.
