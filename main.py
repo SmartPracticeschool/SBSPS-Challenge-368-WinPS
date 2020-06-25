@@ -345,12 +345,12 @@ while running_status:
         while curr_running_status:
             data = []
             curr_time = datetime.datetime.now()
-            current_time = curr_time.strftime("%H:%M:%S")
-            curr_date = str(curr_time.day) + '/' + str(curr_time.month) + '/' + str(curr_time.year)
+            current_time = curr_time.strftime("%H:%M:%S")    # getting current time from the system
+            curr_date = str(curr_time.day) + '/' + str(curr_time.month) + '/' + str(curr_time.year)     # getting current date from the system
             curr_time_stamp = str(current_time) + ' on ' + curr_date
             data.append(curr_time_stamp)
             data.append(loc)
-            weather = observation.get_weather()  # weather in a gist
+            weather = observation.get_weather()
             temperature = weather.get_temperature('celsius')['temp']  # temperature
             data.append(temperature)
             wind = weather.get_wind()['speed']  # speed in mps
