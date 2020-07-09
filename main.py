@@ -68,7 +68,7 @@ def current_situation_d(temp, w, ws):
 
 def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
     log_details.config(state='normal')
-    log_details.insert(t.INSERT, 'This is prediction section----------------------------\n')
+    log_details.insert(t.INSERT, '\nThis is prediction section----------------------------\n')
     log_details.config(state='disabled')
     time.sleep(1)
     length1 = len1
@@ -106,7 +106,6 @@ def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
             time.sleep(1)
             log_details.insert(t.INSERT, 'High Time for optimum Production..............\n')
             time.sleep(1)
-            log_details.insert(t.INSERT, 'Three Hourly Forecast..... !!!\n')
             log_details.insert(t.INSERT,
                                'Predicted output: ' + str(p_d_power1) + 'W ' + str(p_d_power1 / 1000) + 'KW ' +
                                str(p_d_power1 / 1000000) + 'MW' + '\n')
@@ -183,8 +182,7 @@ def current_weather():
         data.append(pressure)
         current_data.append(data)
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, '------------------------------Current Weather Section---------'
-                                     '---------------------\n')
+        log_details.insert(t.INSERT, '\nCurrent Weather Section------------------------------\n')
         time.sleep(1)
         log_details.insert(t.INSERT, str(city_entry) + ', ' + str(country_entry) + '\n')
         time.sleep(2)
@@ -238,7 +236,7 @@ def hourly_forecasting():
         header = ['Date', 'Location', 'Temperature', 'Wind Speed', 'Description']
         total_data_hourly = []
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Hourly Forecast..... !!!\n')
+        log_details.insert(t.INSERT, '\nHourly Forecast..... !!!\n')
         log_details.config(state='disabled')
 
         time.sleep(2)
@@ -425,21 +423,36 @@ def three_hourly_forecasting():
 def decision():
     main_choice = choice_enter.get()
     forecast_choice = forecast_choice_enter.get()
-    if main_choice == '1':
-        if forecast_choice == 'H' or forecast_choice == 'h':
-            hourly_forecasting()
-        elif forecast_choice == '3H' or forecast_choice == '3h':
-            three_hourly_forecasting()
+    cityText = cityE.get()
+    countryText = countryE.get()
+    if cityText == '' and countryText == '':
+        log_details.config(state='normal')
+        log_details.insert(t.INSERT, 'Enter Your Location First !!!\n')
+        log_details.config(state='disabled')
+    else:
+        if main_choice == '':
+            log_details.config(state='normal')
+            log_details.insert(t.INSERT, 'Choose any option !!!\n')
+            log_details.config(state='disabled')
+        elif main_choice == '1':
+            if forecast_choice == 'H' or forecast_choice == 'h':
+                hourly_forecasting()
+            elif forecast_choice == '3H' or forecast_choice == '3h':
+                three_hourly_forecasting()
+            elif forecast_choice == '':
+                log_details.config(state='normal')
+                log_details.insert(t.INSERT, 'Choose any Forecast Type !!!\n')
+                log_details.config(state='disabled')
+            else:
+                log_details.config(state='normal')
+                log_details.insert(t.INSERT, 'Invalid Forecast Type !!!\n')
+                log_details.config(state='disabled')
+        elif main_choice == '2':
+            current_weather()
         else:
             log_details.config(state='normal')
-            log_details.insert(t.INSERT, 'Invalid Forecast Type !!!\n')
+            log_details.insert(t.INSERT, 'Invalid Choice !!!\n')
             log_details.config(state='disabled')
-    elif main_choice == '2':
-        current_weather()
-    else:
-        log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Invalid Choice !!!\n')
-        log_details.config(state='disabled')
 
 
 main = t.Tk()
@@ -513,5 +526,6 @@ log_details_label.config(font=('courier', 12))
 
 log_details = t.Text(main)
 log_details.place(x=700, y=40, height=500, width=450)
+log_details.config(state='disabled')
 
 main.mainloop()
