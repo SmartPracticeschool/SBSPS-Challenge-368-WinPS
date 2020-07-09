@@ -25,5 +25,5 @@ NOTE:
          d. requests
          e. datetime
          f. csv
-         g. raw_input
+         g. tKinter
      iii. Make sure the system is installed with python3 interpreter.
