@@ -6,6 +6,7 @@ The entire program is divided into two main parts:
 Under Forecast Weather Section there are two choices:
 
 a. Forecast for two days which gives hourly forecasts
+
 b. Forecast for five days which gives three hourly forecasts
 
 Forecasts include:
