@@ -4,6 +4,7 @@ The entire program is divided into two main parts:
 2. Current Weather Section
 
 Under Forecast Weather Section there are two choices:
+
 a. Forecast for two days which gives hourly forecasts
 b. Forecast for five days which gives three hourly forecasts
 
