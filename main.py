@@ -1,7 +1,7 @@
 import tkinter as t
 import smtplib
 import time
-import pyowm
+from pyowm.owm import OWM
 import requests
 import datetime
 import csv
@@ -34,18 +34,18 @@ def current_situation_d(temp, w, ws):
     if ws < 12:
         time.sleep(1)
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Wind speed is not suitable for Energy Production........\n')
+        log_details.insert(t.INSERT, 'Wind speed is not suitable for Energy Production.....\n')
         time.sleep(1)
-        log_details.insert(t.INSERT, 'Stopping Wind Turbines.............\n')
+        log_details.insert(t.INSERT, 'Stopping Wind Turbines.....\n')
         log_details.config(state='disabled')
         time.sleep(1)
 
     elif 12 <= ws <= 50:
         time.sleep(1)
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Energy production possible...... \n')
+        log_details.insert(t.INSERT, 'Energy production possible..... \n')
         time.sleep(1)
-        log_details.insert(t.INSERT, 'Starting Wind Turbines........\n')
+        log_details.insert(t.INSERT, 'Starting Wind Turbines.....\n')
         r = 58  # average blade length 58 meters
         n = 40  # efficiency in percentage
 
@@ -59,16 +59,16 @@ def current_situation_d(temp, w, ws):
     else:
         time.sleep(1)
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Wind speed exceeding limit......... \n')
+        log_details.insert(t.INSERT, 'Wind speed exceeding limit.....\n')
         time.sleep(1)
-        log_details.insert(t.INSERT, 'Turning off Wind Turbine.........\n')
+        log_details.insert(t.INSERT, 'Turning off Wind Turbine.....\n')
         log_details.config(state='disabled')
         time.sleep(1)
 
 
 def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
     log_details.config(state='normal')
-    log_details.insert(t.INSERT, '\nThis is prediction section----------------------------\n')
+    log_details.insert(t.INSERT, '\n-------------This is prediction section-------------\n')
     log_details.config(state='disabled')
     time.sleep(1)
     length1 = len1
@@ -104,7 +104,7 @@ def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
             log_details.insert(t.INSERT, 'Wind speed will be optimum at ' + str(t_s_list[m]) + ' i.e. ' + str(
                 w_kps_list[m]) + '\n')
             time.sleep(1)
-            log_details.insert(t.INSERT, 'High Time for optimum Production..............\n')
+            log_details.insert(t.INSERT, 'High Time for optimum Production.....\n')
             time.sleep(1)
             log_details.insert(t.INSERT,
                                'Predicted output: ' + str(p_d_power1) + 'W ' + str(p_d_power1 / 1000) + 'KW ' +
@@ -115,9 +115,9 @@ def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
         elif w_kps_list[m] >= 50:
             time.sleep(1)
             log_details.config(state='normal')
-            log_details.insert(t.INSERT, 'Over production Alert............. ! ! !\n')
+            log_details.insert(t.INSERT, 'Over production Alert..... ! ! !\n')
             time.sleep(1)
-            log_details.insert(t.INSERT, 'Stop Production and Wind Turbines.............. !!!\n')
+            log_details.insert(t.INSERT, 'Stop Production and Wind Turbines..... !!!\n')
 
             s = smtplib.SMTP('smtp.gmail.com', 587)
             s.starttls()
@@ -131,7 +131,7 @@ def prediction(t_s_list, c_t, w_mps_list, w_kps_list, p_d_power_list, len1):
             s.quit()
     if count == length1:
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Wind speed not suitable for maximum power production for the '
+        log_details.insert(t.INSERT, 'Wind speed not suitable for maximum power production\nfor the '
                                      'selected time period.\n')
         time.sleep(1)
         log_details.insert(t.INSERT, 'Wind speed will be less than 20 km/h!!!\n')
@@ -156,9 +156,10 @@ def current_weather():
     else:
         city_entry = cityText
         country_entry = countryText
-        owm = pyowm.OWM(api_key)
+        owm = OWM(api_key)
+        mgr = owm.weather_manager()
         loc = city_entry + ', ' + country_entry
-        observation = owm.weather_at_place(loc)
+        observation = mgr.weather_at_place(loc)
 
         current_data_header = ['Time', 'Location', 'Temperature', 'Wind Speed', 'Description', 'Pressure']
         current_data = []
@@ -170,19 +171,19 @@ def current_weather():
         curr_time_stamp = str(current_time) + ' on ' + curr_date
         data.append(curr_time_stamp)
         data.append(loc)
-        weather = observation.get_weather()  # weather in a gist
-        temperature = weather.get_temperature('celsius')['temp']  # temperature
+        temperature = observation.weather.temperature('celsius')['temp']  # temperature
         data.append(temperature)
-        wind = weather.get_wind()['speed']  # speed in mps
+        wind = observation.weather.wind()['speed']  # speed in mps
         data.append(wind)
         windSpeed = wind * 3.6  # speed in kps
-        status = weather.get_detailed_status()  # weather status
+        weather = observation.weather
+        status = weather.detailed_status  # status
         data.append(status)
-        pressure = weather.get_pressure()['press']  # atmospheric pressure
+        pressure = observation.weather.pressure['press']  # atmospheric pressure
         data.append(pressure)
         current_data.append(data)
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, '\nCurrent Weather Section------------------------------\n')
+        log_details.insert(t.INSERT, '\n\n-------------Current Weather Section-------------\n')
         time.sleep(1)
         log_details.insert(t.INSERT, str(city_entry) + ', ' + str(country_entry) + '\n')
         time.sleep(2)
@@ -208,6 +209,7 @@ def current_weather():
 
         current_situation_d(temperature, wind, windSpeed)
         time.sleep(1)
+    choice_enter.delete(0, 'end')
 
 
 def hourly_forecasting():
@@ -236,7 +238,7 @@ def hourly_forecasting():
         header = ['Date', 'Location', 'Temperature', 'Wind Speed', 'Description']
         total_data_hourly = []
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, '\nHourly Forecast..... !!!\n')
+        log_details.insert(t.INSERT, '\n\nHourly Forecast.....!!!\n')
         log_details.config(state='disabled')
 
         time.sleep(2)
@@ -253,7 +255,8 @@ def hourly_forecasting():
 
         time.sleep(1)
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Gathering Forecast..............\n')
+        log_details.insert(t.INSERT, 'Gathering Forecast.....\n')
+        log_details.insert(t.INSERT, str(location) + '\n')
         log_details.config(state='disabled')
         time.sleep(1)
 
@@ -301,7 +304,7 @@ def hourly_forecasting():
             wind = item['wind_speed']
             wind_kps = wind * 3.6
             wind_mps_list.append(wind)  # adding wind speeds in m/s to list
-            wind_kps_list.append(wind_kps)  # adding wind speeds in m/s to list
+            wind_kps_list.append(wind_kps)  # adding wind speeds in km/s to list
             data.append(wind)
 
             # Weather condition
@@ -317,6 +320,7 @@ def hourly_forecasting():
 
         length = len(time_stamp_list)
         prediction(time_stamp_list, c_temp, wind_mps_list, wind_kps_list, prediction_power_list, length)
+    forecast_choice_enter.delete(0, 'end')
 
 
 def three_hourly_forecasting():
@@ -344,7 +348,7 @@ def three_hourly_forecasting():
         total_data_3hourly = []
 
         log_details.config(state='normal')
-        log_details.insert(t.INSERT, 'Three Hourly Forecast..... !!!\n')
+        log_details.insert(t.INSERT, '\n\nThree Hourly Forecast.....!!!\n')
         log_details.config(state='disabled')
         api_call = 'https://api.openweathermap.org/data/2.5/forecast?appid=' + api_key  # for three hourly
         url_call = api_call + '&q=' + city_entry  # for three hourly for five days
@@ -352,12 +356,12 @@ def three_hourly_forecasting():
         loc = city_entry + ',' + country_entry
 
         log_details.config(state='normal')
+        log_details.insert(t.INSERT, 'Gathering Forecast.....\n')
+        time.sleep(1)
         log_details.insert(t.INSERT, str(loc) + '\n')
-        current_date = ''
-        time.sleep(1)
-        log_details.insert(t.INSERT, 'Gathering Forecast................\n')
-        time.sleep(1)
         log_details.config(state='disabled')
+
+        current_date = ''
 
         for item in json_data['list']:
 
@@ -418,6 +422,7 @@ def three_hourly_forecasting():
 
         length = len(time_stamp_list)
         prediction(time_stamp_list, c_temp, wind_mps_list, wind_kps_list, prediction_power_list, length)
+    forecast_choice_enter.delete(0, 'end')
 
 
 def decision():
@@ -453,6 +458,13 @@ def decision():
             log_details.config(state='normal')
             log_details.insert(t.INSERT, 'Invalid Choice !!!\n')
             log_details.config(state='disabled')
+
+
+def reset():
+    choice_enter.delete(0, 'end')
+    forecast_choice_enter.delete(0, 'end')
+    cityE.delete(0, 'end')
+    countryE.delete(0, 'end')
 
 
 main = t.Tk()
@@ -501,10 +513,10 @@ forecast_choice_label = t.Label(main, text='ENTER YOUR FORECAST METHOD: ->', fg=
 forecast_choice_label.place(x=50, y=290)
 forecast_choice_label.config(font=('courier', 14))
 
-forecast_choice1 = t.Label(main, text='1. HOURLY (Enter H)', fg='black', bg='#50c51d', width=30)
+forecast_choice1 = t.Label(main, text='1. TWO DAYS HOURLY (Enter H)', fg='black', bg='#50c51d', width=35)
 forecast_choice1.place(x=80, y=330)
 
-forecast_choice2 = t.Label(main, text='2. THREE HOURLY (Enter 3H)', fg='black', bg='#c8b10f', width=30)
+forecast_choice2 = t.Label(main, text='2. FIVE DAYS THREE HOURLY (Enter 3H)', fg='black', bg='#c8b10f', width=35)
 forecast_choice2.place(x=80, y=360)
 
 choice_label_forecast = t.Label(main, text='Enter your choice here: ', fg='white', bg='#9330f1')
@@ -519,6 +531,9 @@ start.place(x=240, y=450)
 
 stop = t.Button(main, text='Stop', fg='white', bg='red', width=15, command=exit)
 stop.place(x=440, y=450)
+
+reset = t.Button(main, text='Reset', fg='white', bg='#5f101c', width=15, command=reset)
+reset.place(x=5, y=482)
 
 log_details_label = t.Label(main, text='LOG DETAILS', fg='black', bg='#17deb4', width=30)
 log_details_label.place(x=770, y=10)
